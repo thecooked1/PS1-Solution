@@ -20,7 +20,7 @@ function assertAlmostEqual(
 
 describe("chordLength", () => {
   it("acute angle, integer result", () => {
-    expect(chordLength(5, 60)).to.equal(5);
+    assertAlmostEqual(chordLength(5, 60), 5, 0.001);;
   });
 
   it("right angle, decimal result", () => {
@@ -55,7 +55,16 @@ describe("distance", () => {
 describe("drawSquare", () => {
   it("should draw a square (manual visual check - output.html)", () => {
     const turtle = new SimpleTurtle();
+    const startPosition = turtle.getPosition();
+    
     drawSquare(turtle, 50);
+
+    // Use a tolerance check instead of strict equality
+    assertAlmostEqual(turtle.getPosition().x, startPosition.x, 0.001);
+    assertAlmostEqual(turtle.getPosition().y, startPosition.y, 0.001);
+
+    // Ensure the turtle's heading is back to the original (0 degrees)
+    expect(turtle.getHeading()).to.equal(0);
     // You'll need to visually inspect output.html to verify the square is drawn correctly.
     // Add more assertions if you want to test turtle's internal state (position, heading, etc.)
   });
@@ -64,7 +73,10 @@ describe("drawSquare", () => {
 describe("drawApproximateCircle", () => {
   it("should draw an approximate circle (manual visual check - output.html)", () => {
     const turtle = new SimpleTurtle();
-    drawApproximateCircle(turtle, 30, 36); // Example: 36 sides
+    const startPosition = turtle.getPosition();
+    drawApproximateCircle(turtle, 30, 36);
+    const finalPosition = turtle.getPosition();
+    assertAlmostEqual(distance(startPosition, finalPosition), 0, 1.0);
     // Visual check of output.html
   });
 });
@@ -72,14 +84,15 @@ describe("drawApproximateCircle", () => {
 describe("findPath", () => {
   it("example path finding (conceptual check)", () => {
     const turtle = new SimpleTurtle();
-    const points: Point[] = [
-      { x: 10, y: 10 },
-      { x: 40, y: 10 },
-      { x: 40, y: 40 },
-    ];
-    const pathInstructions = findPath(turtle, points);
-    // Since findPath is conceptual in PS0, you might just check if it returns *something*
-    expect(pathInstructions).to.be.an("array");
+  const points: Point[] = [
+    { x: 10, y: 10 },
+    { x: 40, y: 10 },
+    { x: 40, y: 40 },
+  ];
+  const pathInstructions = findPath(turtle, points);
+  
+  expect(pathInstructions).to.be.an("array").that.is.not.empty;
+  expect(pathInstructions[0]).to.match(/turn|forward/);
     // More detailed tests would involve analyzing the *content* of pathInstructions if you define a specific output format.
   });
 });
